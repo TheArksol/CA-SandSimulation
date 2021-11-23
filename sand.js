@@ -35,6 +35,7 @@ let grid = [
 
 let gridHeight = 30;
 let gridWidth = 30;
+let currentElement = 2; // Default is Sand
 
 
 function grid_Init() {
@@ -42,11 +43,11 @@ function grid_Init() {
 
   const canvas = document.getElementById("canvas_sandbox");
   console.log(canvas);
-  canvas.addEventListener('mousedown', function(e) {
-  getCursorPosition(canvas, e);
+  canvas.addEventListener('mousedown', function (e) {
+    getCursorPosition(canvas, e);
   })
 
-  const update = setInterval(grid_Update, 60);
+  const update = setInterval(grid_Update, 50);
 
   // grid_Update();
 
@@ -69,29 +70,74 @@ function grid_Update() {
 
 function cube_Update(cube, i, j) {
 
+  //Element 1 - Sand
   if (cube[j] == 1) {
     if ((i + 1) <= (grid.length - 1)) {
       //Down
-      if (grid[i + 1][j] == 0) {
+      if (grid[i + 1][j] == 0 || grid[i + 1][j] == 2) {
 
+        let _cube = cube[j];
+        cube[j] = grid[i + 1][j];
+        grid[i + 1][j] = _cube;
+
+        //Left
+      } else if (grid[i + 1][j - 1] == 0 || grid[i + 1][j - 1] == 2) {
+        let _cube = cube[j];
+        cube[j] = grid[i + 1][j - 1];
+        grid[i + 1][j - 1] = _cube;
+
+      } else if (grid[i + 1][j + 1] == 0 || grid[i + 1][j + 1] == 2) {
+        let _cube = cube[j];
+        cube[j] = grid[i + 1][j + 1];
+        grid[i + 1][j + 1] = _cube;
+      }
+    }
+  }
+
+  //Element 2 - Water
+  if (cube[j] == 2) {
+    if ((i + 1) <= (grid.length - 1)) {
+      
+      //Down
+      if (grid[i + 1][j] == 0) {
         let _cube = cube[j];
         cube[j] = 0;
         grid[i + 1][j] = _cube;
 
-        //Left
-      } else if (grid[i + 1][j - 1] == 0) {
-        let _cube = cube[j];
-        cube[j] = 0;
-        grid[i + 1][j - 1] = _cube;
+        //Random Left or Right
+      } else {
+        let rng = Math.floor(Math.random() * 2);
 
-      } else if (grid[i + 1][j + 1] == 0) {
-        let _cube = cube[j];
-        cube[j] = 0;
-        grid[i + 1][j + 1] = _cube;
+        if(rng == 0){
+          if (grid[i][j - 1] == 0) {
+           
+            let _cube = cube[j];
+            cube[j] = 0;
+            grid[i][j - 1] = _cube;
+  
+          } else if (grid[i][j + 1] == 0) {
+           
+            let _cube = cube[j];
+            cube[j] = 0;
+            grid[i][j + 1] = _cube;
+          }
+        }else{
+          if (grid[i][j + 1] == 0) {
+           
+            let _cube = cube[j];
+            cube[j] = 0;
+            grid[i][j + 1] = _cube;
+  
+          } else if (grid[i][j - 1] == 0) {
+            
+            let _cube = cube[j];
+            cube[j] = 0;
+            grid[i][j - 1] = _cube;
+          }
+        }
+        
+
       }
-
-
-
     }
   }
 }
@@ -101,7 +147,7 @@ function canvas_Update() {
   const context = canvas.getContext('2d');
   let cellHeight = canvas.height / gridHeight;
   let cellWidth = canvas.width / gridWidth;
-  
+
   grid.forEach((row, y) => {
     row.forEach((value, x) => {
       context.fillStyle = cellColor(value);
@@ -113,12 +159,15 @@ function canvas_Update() {
 }
 
 function cellColor(value) {
-  if(value == 1)
-  {
-      return 'sandybrown';
+  if (value == 1) {
+    return 'sandybrown';
   }
 
-  if(value == 9){
+  if (value == 2) {
+    return 'steelblue';
+  }
+
+  if (value == 9) {
     return 'darkgrey'
   }
 
@@ -136,26 +185,28 @@ function getCursorPosition(canvas, event) {
   context.fillStyle = "crimson";
   let x = Math.floor((event.clientX - rect.left) / cellWidth);
   let y = Math.floor((event.clientY - rect.top) / cellHeight);
-  if(x > 29){
+  if (x > 29) {
     x = 29;
   }
 
-  if(y > 29){
+  if (y > 29) {
     y = 29;
   }
 
-  if(grid[y][x] == 0){
+  if (grid[y][x] == 0) {
     // context.beginPath();
     // context.fillRect(x * cellWidth, y * cellHeight, cellWidth , cellHeight);
     // console.log("Paint in: " + x + "/" + y);
     // context.stroke();
-    grid[y][x] = 1;
+    grid[y][x] = currentElement;
     // console.log(grid);
-  }else{
-    console.log(grid[y][x] + " "+ x + "/"+ y);
+  } else {
+    console.log(grid[y][x] + " " + x + "/" + y);
     console.log(grid);
   }
-  
-  
+}
+
+function element_switchTo(element){
+  currentElement = element;
 }
 
