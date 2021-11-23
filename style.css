@@ -1,0 +1,13 @@
+.flex{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#canvas_sandbox{
+  width: 400px;
+  height: 400px;
+  outline: 1px solid grey;
+  background-color: aliceblue;
+  color: sand
+}
